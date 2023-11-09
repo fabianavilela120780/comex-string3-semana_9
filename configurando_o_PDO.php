@@ -1,4 +1,4 @@
-comex:/caminho/para/o/arquivo/banco.sq3
+comex:/caminho/para/o/arquivo/comex.sq3
 sqlite::memory:
 sqlite:
 
