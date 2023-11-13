@@ -1,19 +1,11 @@
-comex:/caminho/para/o/arquivo/comex.sq3
-sqlite::memory:
-sqlite:
+<php
+    $caminho = _DIR_ . " /../../db.sqlite";
+    
+    $pdo = new PDO('sqlite: ' . $caminho);
 
-<?php
-
-$pdo = new PDO(
-
-    'sqlite::memory:',
-
-    null,
-
-    null,
-
-    array(PDO::ATTR_PERSISTENT => true)
-
-);
-
-?>
+    $sql = "CREATE TABLE clientes (
+    id INTEGER PRIMARY KEY,
+    nome TEXT,
+    email TEXT,
+    celular TEXT,
+    );";    
