@@ -1,105 +1,34 @@
 <?php
 
-use Comex\Modelo\Cliente\Cliente;
+$caminhoBanco = __DIR__ . '/banco.sqlite';
+$pdo = new PDO('sqlite:' . $caminhoBanco);
 
-class ClienteDAO {
-    private $pdo;
+echo 'Conectei';
 
-    public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
-    }
+$createTableSql = "CREATE TABLE IF NOT EXISTS Cliente (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    celular VARCHAR(15) NOT NULL,
+    endereco TEXT,
+    totalCompras DECIMAL(10, 2),
+    dataCadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-    public function salvar(Cliente $cliente) {
-        $stmt = $this->pdo->prepare('INSERT INTO Cliente (nome, email, celular, endereco, totalCompras) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute([$cliente->getNome(), $cliente->getEmail(), $cliente->getCelular(), $cliente->getEndereco(), $cliente->getTotalCompras()]);
-        return $this->pdo->lastInsertId();
-    }
+CREATE TABLE IF NOT EXISTS Produto (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    preco DECIMAL(10, 2) NOT NULL,
+    quantidadeEmEstoque INT NOT NULL,
+    dataCadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-    public function buscar($id) {
-        $stmt = $this->pdo->prepare('SELECT * FROM Cliente WHERE id = ?');
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function atualizar(Cliente $cliente) {
-        $stmt = $this->pdo->prepare('UPDATE Cliente SET nome = ?, email = ?, celular = ?, endereco = ?, totalCompras = ? WHERE id = ?');
-        $stmt->execute([$cliente->getNome(), $cliente->getEmail(), $cliente->getCelular(), $cliente->getEndereco(), $cliente->getTotalCompras()]);
-    }
-
-    public function apagar($id) {
-        $stmt = $this->pdo->prepare('DELETE FROM Cliente WHERE id = ?');
-        $stmt->execute([$id]);
-    }
-}
-?>
-<?php 
-use Comex\Modelo\Produto\Pedido;
-
-class PedidoDAO {
-    private $pdo;
-
-    public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
-    }
-
-    public function salvar(Pedido $pedido) {
-        $stmt = $this->pdo->prepare('INSERT INTO Pedido (clienteId, dataPedido, valorTotal, status) VALUES (?, ?, ?, ?)');
-        $stmt->execute([$pedido->getCliente(), $pedido->getProdutos() ]);
-        return $this->pdo->lastInsertId();
-    }
-
-    public function buscar($id) {
-        $stmt = $this->pdo->prepare('SELECT * FROM Pedido WHERE id = ?');
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function atualizar(Pedido $pedido) {
-        $stmt = $this->pdo->prepare('UPDATE Pedido SET clienteId = ?, dataPedido = ?, valorTotal = ?, status = ? WHERE id = ?');
-        $stmt->execute([$pedido->getCliente(), $pedido->getProdutos()]);
-    }
-
-    public function apagar($id) {
-        $stmt = $this->pdo->prepare('DELETE FROM Pedido WHERE id = ?');
-        $stmt->execute([$id]);
-    }
-}
-?>
-<?php 
-use Comex\Modelo\Produto\Produto;
-
-
-class ProdutoDAO {
-    private $pdo;
-
-    public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
-    }
-
-    public function salvar(Produto $produto) {
-        $stmt = $this->pdo->prepare('INSERT INTO Produto (nome, preco, quantidadeEmEstoque) VALUES (?, ?, ?)');
-        $stmt->execute([$produto->getNome(), $produto->getPreco(), $produto->getQuantidade()]);
-        return $this->pdo->lastInsertId();
-    }
-
-    public function buscar($id) {
-        $stmt = $this->pdo->prepare('SELECT * FROM Produto WHERE id = ?');
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function atualizar(Produto $produto) {
-        $stmt = $this->pdo->prepare('UPDATE Produto SET nome = ?, preco = ?, quantidadeEmEstoque = ? WHERE id = ?');
-        $stmt->execute([$produto->getNome(), $produto->getPreco(), $produto->getQuantidade()]);
-    }
-
-    public function apagar($id) {
-        $stmt = $this->pdo->prepare('DELETE FROM Produto WHERE id = ?');
-        $stmt->execute([$id]);
-    }
-}
-
-
-
-
-?>
+CREATE TABLE IF NOT EXISTS Pedido (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    clienteId INT NOT NULL,
+    dataPedido DATE,
+    valorTotal DECIMAL(10, 2),
+    status VARCHAR(50),
+    dataCadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (clienteId) REFERENCES Cliente(id)
+);";
